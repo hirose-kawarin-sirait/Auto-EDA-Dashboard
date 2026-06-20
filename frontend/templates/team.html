@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Member — Auto EDA Insight</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: #050816;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ── Background ── */
+        .bg-layer {
+            position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(30,20,100,0.7) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 20%, rgba(10,60,120,0.6) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(80,10,80,0.4) 0%, transparent 45%);
+        }
+
+        .grid-lines {
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* ── Header ── */
+        .page-header {
+            position: relative; z-index: 2;
+            text-align: center;
+            padding: 52px 20px 32px;
+        }
+
+        .page-header .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .logo-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(0,200,255,0.1);
+            border: 1px solid rgba(0,200,255,0.3);
+            color: #00c8ff;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+        }
+
+        .page-header h1 {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .page-header h1 .g1 { color: #fff; }
+        .page-header h1 .g2 {
+            background: linear-gradient(90deg, #00c8ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header .sub {
+            color: #8b8fa8;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* ── Cards grid ── */
+        .cards-section {
+            position: relative; z-index: 2;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        /* Each member card */
+        .member-card {
+            width: 190px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 28px 18px 22px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .member-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 22px;
+            padding: 1.5px;
+            background: var(--glow);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .member-card:hover { transform: translateY(-8px); }
+        .member-card:hover::before { opacity: 1; }
+
+        .member-card:hover .glow-blob { opacity: 0.25; }
+
+        .glow-blob {
+            position: absolute;
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: var(--glow);
+            filter: blur(50px);
+            opacity: 0;
+            top: -20px; left: 50%;
+            transform: translateX(-50%);
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        /* Color variants */
+        .card-c1 { --glow: linear-gradient(135deg,#00c8ff,#0066ff); }
+        .card-c2 { --glow: linear-gradient(135deg,#00e5a0,#00c8ff); }
+        .card-c3 { --glow: linear-gradient(135deg,#6c63ff,#a855f7); }
+        .card-c4 { --glow: linear-gradient(135deg,#ff9500,#ffcc00); }
+        .card-c5 { --glow: linear-gradient(135deg,#ff4081,#a855f7); }
+
+        /* Photo */
+        .photo-ring {
+            width: 90px; height: 90px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            padding: 3px;
+            background: var(--glow);
+            position: relative;
+        }
+
+        .photo-inner {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #1a1d2e;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .photo-inner img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        /* Card content */
+        .card-role {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #8b8fa8;
+            margin-bottom: 4px;
+        }
+
+        .card-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #fff;
+            margin-bottom: 3px;
+            line-height: 1.3;
+            min-height: 2.4em;
+        }
+        
+        .card-nim {
+            font-size: 0.72rem;
+            color: #6b7280;
+            margin-bottom: 14px;
+        }
+
+        .card-links {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            z-index: 2;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .card-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 7px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            color: #c4c6d8;
+            font-size: 0.72rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .card-link:hover {
+            background: rgba(108,99,255,0.2);
+            color: #fff;
+            border-color: rgba(108,99,255,0.4);
+        }
+
+        .card-link i { font-size: 0.78rem; }
+
+        /* ── CTA button ── */
+        .cta-section {
+            position: relative; z-index: 2;
+            text-align: center;
+            padding: 0 20px 60px;
+        }
+
+        .cta-section p {
+            color: #8b8fa8;
+            font-size: 0.88rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-cta-primary {
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(108,99,255,0.35);
+        }
+
+        .btn-cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(108,99,255,0.5);
+        }
+
+        .btn-cta-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #c4c6d8;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .btn-cta-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        @media (max-width: 700px) {
+            .member-card { width: 160px; padding: 22px 14px 18px; }
+            .photo-ring { width: 74px; height: 74px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="grid-lines"></div>
+
+<!-- Header -->
+<div class="page-header">
+    <div class="logo-row">
+        <div class="logo-icon"><i class="fas fa-chart-bar"></i></div>
+        <span class="logo-name">Auto EDA Insight</span>
+    </div>
+    <div class="badge">KELOMPOK 3 · PEMROGRAMAN SAINS DATA</div>
+    <h1>
+        <span class="g1">Team </span><span class="g2">Member</span>
+    </h1>
+    <p class="sub">Kenalan dulu sama tim di balik Auto EDA Insight </p>
+</div>
+
+<!-- Cards -->
+<div class="cards-section">
+
+    <div class="member-card card-c1">
+        <div class="glow-blob"></div>
+        <div class="photo-ring">
+            <div class="photo-inner">
+                <img src="{{ url_for('static', filename='images/rose.jpeg') }}" onerror="this.parentElement.innerHTML='HR'">
+            </div>
+        </div>
+        <p class="card-role">Nama</p>
+        <p class="card-name">Hirose Kawarin Sirait</p>
+        <p class="card-nim">NIM: 52250012</p>
+        <div class="card-links">
+            <a href="https://github.com/hirose-kawarin-sirait" target="_blank" class="card-link">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </div>
+    </div>
+
+    <div class="member-card card-c2">
+        <div class="glow-blob"></div>
+        <div class="photo-ring">
+            <div class="photo-inner">
+                <img src="{{ url_for('static', filename='images/cecil.jpeg') }}" onerror="this.parentElement.innerHTML='CM'">
+            </div>
+        </div>
+        <p class="card-role">Nama</p>
+        <p class="card-name">Cecilia Mutiara Handayani</p>
+        <p class="card-nim">NIM: 52250013</p>
+        <div class="card-links">
+            <a href="https://github.com/sisilmutiara8-wq" target="_blank" class="card-link">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </div>
+    </div>
+
+    <div class="member-card card-c3">
+        <div class="glow-blob"></div>
+        <div class="photo-ring">
+            <div class="photo-inner">
+                <img src="{{ url_for('static', filename='images/Dhefio.JPEG') }}" onerror="this.parentElement.innerHTML='DA'">
+            </div>
+        </div>
+        <p class="card-role">Nama</p>
+        <p class="card-name">Dhefio Alim Muzaki</p>
+        <p class="card-nim">NIM: 52250014</p>
+        <div class="card-links">
+            <a href="https://github.com/dfjy2118" target="_blank" class="card-link">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </div>
+    </div>
+
+    <div class="member-card card-c4">
+        <div class="glow-blob"></div>
+        <div class="photo-ring">
+            <div class="photo-inner">
+                <img src="{{ url_for('static', filename='images/yustian.jpeg') }}" onerror="this.parentElement.innerHTML='YP'">
+            </div>
+        </div>
+        <p class="card-role">Nama</p>
+        <p class="card-name">M. Yustian Putra Muhadi</p>
+        <p class="card-nim">NIM: 52250015</p>
+        <div class="card-links">
+            <a href="https://github.com/myustianputramuhadi" target="_blank" class="card-link">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </div>
+    </div>
+
+    <div class="member-card card-c5">
+        <div class="glow-blob"></div>
+        <div class="photo-ring">
+            <div class="photo-inner">
+                <img src="{{ url_for('static', filename='images/nisah.jpeg') }}" onerror="this.parentElement.innerHTML='KN'">
+            </div>
+        </div>
+        <p class="card-role">Nama</p>
+        <p class="card-name">Khafizatun Nisa</p>
+        <p class="card-nim">NIM: 52250018</p>
+        <div class="card-links">
+            <a href="https://github.com/KhafizatunNisa" target="_blank" class="card-link">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<!-- CTA -->
+{% if request.args.get('from') != 'dashboard' %}
+<div class="cta-section">
+    <p>Sudah kenalan? Yuk mulai eksplorasi data bareng kami </p>
+    <div class="cta-buttons">
+        <a href="/login" class="btn-cta btn-cta-primary">
+            <i class="fas fa-sign-in-alt"></i> Login ke Dashboard
+        </a>
+        <a href="/register" class="btn-cta btn-cta-secondary">
+            <i class="fas fa-user-plus"></i> Buat Akun Baru
+        </a>
+    </div>
+</div>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto EDA Analytics Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <i class="fas fa-chart-bar"></i>
+        <h2><span>Auto EDA</span></h2>
+    </div>
+
+    <nav>
+        <!-- DASHBOARD -->
+        <a href="#" class="nav-link" onclick="showSection('dashboard', event)">
+            <i class="fas fa-th-large"></i> <span>Dashboard</span>
+        </a>
+
+        <!-- UPLOAD -->
+        <a href="#" class="nav-link" onclick="showSection('upload', event)">
+            <i class="fas fa-upload"></i> <span>Upload Data</span>
+        </a>
+
+        <!-- DATA PREVIEW -->
+        <div class="nav-parent">
+            <div class="nav-link" onclick="togglePreviewMenu()">
+                <i class="fas fa-table"></i> <span>Data Preview</span>
+                <i id="preview-arrow" class="fas fa-chevron-down"></i>
+            </div>
+
+            <div id="preview-submenu" class="sub-menu" style="display:none;">
+
+                <a href="#" class="nav-link sub-link"
+                   onclick="showSection('preview', event)">
+                    <i class="fas fa-table"></i> <span>Dataset Preview</span>
+                </a>
+
+                <a href="#" class="nav-link sub-link"
+                   onclick="showSection('datatype', event)">
+                    <i class="fas fa-robot"></i> <span>Data Type Detection</span>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- ADVANCED STATS -->
+        <div class="nav-parent">
+            <div class="nav-link" onclick="toggleAdvancedMenu()">
+                <i class="fas fa-chart-line"></i> <span>Descriptive Statistics</span>
+                <i id="advanced-arrow" class="fas fa-chevron-down"></i>
+            </div>
+
+            <div id="advanced-submenu" class="sub-menu" style="display:none;">
+
+                <a href="#" class="nav-link sub-link"
+                   onclick="showSection('numerical', event)">
+                    <i class="fas fa-calculator"></i> <span>Numerical Statistics</span>
+                </a>
+
+                <a href="#" class="nav-link sub-link"
+                   onclick="showSection('categorical', event)">
+                    <i class="fas fa-tags"></i> <span>Categorical Statistics</span>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- VISUALIZATION -->
+        <div class="nav-parent">
+            <div class="nav-link" onclick="toggleVizMenu()">
+                <i class="fas fa-chart-pie"></i> <span>Visualizations</span>
+                <i id="viz-arrow" class="fas fa-chevron-down"></i>
+            </div>
+            <div id="viz-submenu" class="sub-menu" style="display:none;">
+                <a href="#" class="nav-link sub-link" onclick="showVizTab('univariate', event)">
+                    <i class="fas fa-chart-bar"></i> <span>Univariate</span>
+                </a>
+                <a href="#" class="nav-link sub-link" onclick="showVizTab('bivariate', event)">
+                    <i class="fas fa-braille"></i> <span>Bivariate</span>
+                </a>
+                <a href="#" class="nav-link sub-link" onclick="showVizTab('multivariate', event)">
+                    <i class="fas fa-project-diagram"></i> <span>Multivariate</span>
+                </a>
+                <a href="#" class="nav-link sub-link" onclick="showVizTab('catvsnum', event)">
+                    <i class="fas fa-exchange-alt"></i> <span>Cat vs Num</span>
+                </a>
+                <a href="#" class="nav-link sub-link" onclick="showVizTab('catvscat', event)">
+                    <i class="fas fa-exchange-alt"></i> <span>Cat vs Cat</span>
+                </a>
+                <a href="#" class="nav-link sub-link" onclick="showVizTab('numvsnum', event)">
+                    <i class="fas fa-exchange-alt"></i> <span>Num vs Num</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- INSIGHTS -->
+        <a href="#" class="nav-link"
+           onclick="showSection('insights', event)">
+            <i class="fas fa-lightbulb"></i> <span>Insights</span>
+        </a>
+
+        <!-- TIME SERIES -->
+        <a href="#" class="nav-link"
+           onclick="showSection('timeseries', event)">
+            <i class="fas fa-chart-line"></i> <span>Time Series</span>
+        </a>
+
+        <!-- REPORTING SYSTEM -->
+        <div class="nav-parent">
+
+            <div class="nav-link" onclick="toggleReportMenu()">
+                <i class="fas fa-file-alt"></i> <span>Reporting System</span>
+                <i id="report-arrow" class="fas fa-chevron-down"></i>
+            </div>
+
+            <div id="report-submenu" class="sub-menu" style="display:none;">
+                <a class="nav-link sub-link" href="#" onclick="downloadPDF(event, false)">
+                    <i class="fas fa-file-pdf"></i> Download PDF (Before)
+                </a>
+                <a id="btn-pdf-after" class="nav-link sub-link" href="#" onclick="downloadPDF(event, true)">
+                    <i class="fas fa-file-pdf"></i> Download PDF (After Cleaning)
+                </a>
+
+                <a class="nav-link sub-link" href="#"
+                   onclick="exportExcel(event)">
+                    <i class="fas fa-file-excel"></i> <span>Export Excel</span>
+                </a>
+
+                <a class="nav-link sub-link" href="#"
+                   onclick="exportCSV(event)">
+                    <i class="fas fa-file-csv"></i> <span>Export CSV</span>
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- SETTINGS -->
+<a href="/settings" class="nav-link">
+    <i class="fas fa-cog"></i>
+    <span>Settings</span>
+</a>
+
+        <!-- Team Member -->
+        <a href="#" class="nav-link" style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px;"
+           onclick="showSection('team', event)">
+            <i class="fas fa-users"></i> <span>Team Member</span>
+        </a>
+    </nav>
+</div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <div class="header">
+            <div class="header-buttons">
+                <a href="/logout" class="btn logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+                <button class="btn" onclick="toggleTheme()" id="theme-btn">
+                    <i class="fas fa-sun"></i> Light Mode
+                </button>
+            </div>
+            <p class="dash-greeting" id="dash-greeting" data-username="{{ username }}">
+                Good Morning, {{ username }}!
+            </p>
+            <h1><i class="fas fa-brain"></i> Intelligent Data Analytics Dashboard</h1>
+            <p>Upload, analyze, visualize and get insights automatically</p>
+        </div>
+
+        <div class="cards-row" id="summary-cards" style="display:none;">
+            <div class="card"><i class="fas fa-database"></i><div><h3 id="card-rows">0</h3><p>Total Rows</p></div></div>
+            <div class="card"><i class="fas fa-columns"></i><div><h3 id="card-cols">0</h3><p>Total Columns</p></div></div>
+            <div class="card"><i class="fas fa-hashtag"></i><div><h3 id="card-numeric">0</h3><p>Numeric Columns</p></div></div>
+            <div class="card"><i class="fas fa-font"></i><div><h3 id="card-categorical">0</h3><p>Categorical Columns</p></div></div>
+            <div class="card"><i class="fas fa-exclamation-triangle"></i><div><h3 id="card-missing">0</h3><p>Missing Values</p></div></div>
+        </div>
+
+        <!-- DASHBOARD OVERVIEW -->
+        <div id="section-dashboard" class="section active">
+            <div class="section-title"><i class="fas fa-th-large"></i> Dashboard Overview</div>
+
+            <!-- EMPTY STATE -->
+            <div id="dash-empty-state">
+                <div class="upload-area" id="dash-upload-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Belum ada dataset yang diupload</p>
+                    <small>Drag &amp; drop file di sini, atau browse manual</small>
+                    <button class="btn" onclick="document.getElementById('file-input').click()">
+                        <i class="fas fa-folder-open"></i> Browse File
+                    </button>
+                </div>
+            </div>
+
+            <!-- MAIN DASHBOARD CONTENT (filled by JS after upload) -->
+            <div id="dash-content" style="display:none;">
+
+                <!-- FILE INFO -->
+                <div class="dash-fileinfo-row">
+                    <div class="dash-file-card">
+                        <i class="fas fa-file-alt"></i>
+                        <div style="min-width:0; flex:1;">
+                            <h3 id="dash-filename">-</h3>
+                            <p>Size: <span id="dash-filesize">-</span></p>
+                        </div>
+                        <span class="dash-uploaded-badge"><i class="fas fa-check-circle"></i> Uploaded</span>
+                    </div>
+                    <button class="btn" style="margin:0;" onclick="document.getElementById('file-input').click()">
+                        <i class="fas fa-sync-alt"></i> Upload Dataset Lain
+                    </button>
+                </div>
+
+                <!-- DATA PREVIEW -->
+                <div class="dash-block">
+                    <div class="dash-block-title"><i class="fas fa-table"></i> Data Preview (First 5 Rows)</div>
+                    <div class="table-container">
+                        <table id="dash-preview-table">
+                            <thead id="dash-preview-head"></thead>
+                            <tbody id="dash-preview-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="dash-viewall" onclick="showSection('preview', null)">
+                        View Full Dataset <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- NUMERICAL + CATEGORICAL SUMMARY (condensed) -->
+                <div class="dash-grid-2">
+                    <div class="dash-block">
+                        <div class="dash-block-title"><i class="fas fa-calculator"></i> Numerical Summary</div>
+                        <div class="table-container" id="dash-num-summary-wrap" style="max-height:none;"></div>
+                        <div class="dash-viewall" onclick="showSection('numerical', null)">
+                            View Full Statistics <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    <div class="dash-block">
+                        <div class="dash-block-title"><i class="fas fa-tags"></i> Categorical Summary</div>
+                        <div class="table-container" id="dash-cat-summary-wrap" style="max-height:none;"></div>
+                        <div class="dash-viewall" onclick="showSection('categorical', null)">
+                            View Full Statistics <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MISSING VALUES + DATA QUALITY -->
+                <div class="dash-grid-2">
+                    <div class="dash-block">
+                        <div class="dash-block-title"><i class="fas fa-chart-pie"></i> Missing Values by Column (%)</div>
+                        <div id="dash-missing-donut"></div>
+                    </div>
+                    <div class="dash-block">
+                        <div class="dash-block-title"><i class="fas fa-shield-alt"></i> Data Quality</div>
+                        <div id="dash-quality-box"></div>
+                    </div>
+                </div>
+
+                <!-- AUTOMATIC INSIGHTS -->
+                <div class="dash-block">
+                    <div class="dash-block-title"><i class="fas fa-lightbulb"></i> Automatic Insights</div>
+                    <div id="dash-insights-list"></div>
+                    <div class="dash-viewall" onclick="showSection('insights', null)">
+                        View All Insights <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- VISUALIZATIONS -->
+                <div class="dash-block">
+                    <div class="dash-block-title"><i class="fas fa-chart-bar"></i> Visualizations</div>
+                    <div class="dash-viz-grid">
+
+                        <div class="dash-viz-panel">
+                            <div class="dash-viz-panel-title">Numerical (Univariate)</div>
+                            <div class="dash-mini-chart-grid" id="dash-viz-numuni"></div>
+                            <div class="dash-viewall" id="dash-viewall-numuni" onclick="goToViz('univariate','numerical')">View All <i class="fas fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-viz-panel">
+                            <div class="dash-viz-panel-title">Categorical (Univariate)</div>
+                            <div class="dash-mini-chart-grid" id="dash-viz-catuni"></div>
+                            <div class="dash-viewall" id="dash-viewall-catuni" onclick="goToViz('univariate','categorical')">View All <i class="fas fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-viz-panel">
+                            <div class="dash-viz-panel-title">Numerical vs Numerical</div>
+                            <div class="dash-mini-chart-grid" id="dash-viz-numnum"></div>
+                            <div class="dash-viewall" id="dash-viewall-numnum" onclick="goToViz('bivariate')">View All <i class="fas fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-viz-panel">
+                            <div class="dash-viz-panel-title">Categorical vs Numerical</div>
+                            <div class="dash-mini-chart-grid" id="dash-viz-catnum"></div>
+                            <div class="dash-viewall" id="dash-viewall-catnum" onclick="goToViz('catvsnum')">View All <i class="fas fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-viz-panel">
+                            <div class="dash-viz-panel-title">Categorical vs Categorical</div>
+                            <div class="dash-mini-chart-grid" id="dash-viz-catcat"></div>
+                            <div class="dash-viewall" id="dash-viewall-catcat" onclick="goToViz('catvscat')">View All <i class="fas fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-viz-panel">
+                            <div class="dash-viz-panel-title">Numerical vs Numerical</div>
+                            <div class="dash-mini-chart-grid" id="dash-viz-numnum2"></div>
+                            <div class="dash-viewall" id="dash-viewall-numnum2" onclick="goToViz('numvsnum')">View All <i class="fas fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-viz-panel">
+                            <div class="dash-viz-panel-title">Time Series</div>
+                            <div class="dash-mini-chart-grid" id="dash-viz-timeseries"></div>
+                            <div class="dash-viewall" id="dash-viewall-timeseries" onclick="showSection('timeseries', null)">View Full Analysis <i class="fas fa-arrow-right"></i></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- REPORTING & EXPORT -->
+                <div class="dash-block" style="margin-bottom:0;">
+                    <div class="dash-block-title"><i class="fas fa-file-alt"></i> Reporting &amp; Export</div>
+                    <div class="dash-report-grid">
+                        <button class="btn" onclick="downloadPDF(event, false)">
+                            <i class="fas fa-file-pdf"></i> PDF Report (Before)
+                        </button>
+                        <button class="btn" id="dash-btn-pdf-after" onclick="downloadPDF(event, true)">
+                            <i class="fas fa-file-pdf"></i> PDF Report (After Cleaning)
+                        </button>
+                        <button class="btn btn-success" onclick="exportExcel(event)">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                        <button class="btn btn-warning" onclick="exportCSV(event)">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- UPLOAD -->
+        <div id="section-upload" class="section">
+            <div class="section-title"><i class="fas fa-upload"></i> Upload Your Dataset</div>
+            <div class="upload-area" id="upload-area">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag &amp; Drop your file here or click to browse</p>
+                <small>Supported: CSV, Excel (.xlsx), Text (.txt)</small>
+                <input type="file" id="file-input" accept=".csv,.xlsx,.txt" style="display:none;">
+                <button class="btn" onclick="document.getElementById('file-input').click()">
+                    <i class="fas fa-folder-open"></i> Browse File
+                </button>
+            </div>
+            <div id="upload-status" style="display:none;" class="upload-status">
+                <i class="fas fa-check-circle"></i>
+                <span id="upload-message"></span>
+            </div>
+        </div>
+
+        <!-- PREVIEW -->
+<div id="section-preview" class="section">
+    <div class="section-title"><i class="fas fa-table"></i> Data Preview</div>
+    <div id="dataset-info" class="info-box"></div>
+
+    <!-- Data Diagnostic Report -->
+    <div id="diagnostic-report" style="display:none; margin-bottom:20px;">
+        <div style="color:#6c63ff; font-weight:600; margin-bottom:10px;">
+            <i class="fas fa-stethoscope"></i> Data Diagnostic Report
+        </div>
+        <div id="diagnostic-content"></div>
+    </div>
+
+    <!-- Cleaning Tools -->
+    <div class="cw" style="margin-top:20px;">
+        <div class="cw-header">
+            <span class="cw-title">Pilih operasi pembersihan data</span>
+            <span class="cw-badge" id="cnt">0 selected</span>
+        </div>
+        <div class="cw-actions">
+            <div class="cw-btn" id="btn-selall"  onclick="selAll(this)">Select All</div>
+            <div class="cw-btn" id="btn-clean"   onclick="cwCleanSelected(this)">Clean</div>
+            <div class="cw-btn" id="btn-reset"   onclick="cwResetAll(this)">Reset</div>
+            <div class="cw-btn" id="btn-refresh" onclick="cwRefreshViz(this)">Refresh</div>
+            <div class="cw-btn" id="btn-save"    onclick="cwSaveDataset(this)">Save</div>
+            <div class="cw-btn" id="btn-dl"      onclick="cwDownloadDataset(this)">Download</div>
+        </div>
+        <div class="cw-grid" id="cleaning-grid"></div>
+        <div class="cw-footer">
+            <div class="cw-btn" id="btn-before" style="font-size:11px;padding:5px 10px" onclick="cwToggleView(this,'before')">Before Cleaning</div>
+            <div class="cw-btn" id="btn-after"  style="font-size:11px;padding:5px 10px" onclick="cwToggleView(this,'after')">After Cleaning</div>
+            <span class="cw-status" id="clean-status">Select an operation then click Clean</span>
+        </div>
+    </div>
+
+    <!-- Tabel Preview -->
+    <div class="table-container" style="margin-top:20px;">
+        <table id="preview-table">
+            <thead id="preview-head"></thead>
+            <tbody id="preview-body"></tbody>
+        </table>
+    </div>
+
+    <div style="margin-top:15px;">
+        <div class="cw-btn" id="viewAllBtn" onclick="toggleFullDataset()" style="display:inline-flex;">
+            <i class="fas fa-table"></i> View Full Dataset
+        </div>
+    </div>
+    <div id="fullDatasetContainer" style="display:none; margin-top:20px;">
+        <div class="table-container" style="max-height:500px; overflow:auto;">
+            <table id="full-table">
+                <thead id="full-head"></thead>
+                <tbody id="full-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+        <!-- DATA TYPE -->
+        <div id="section-datatype" class="section">
+            <div class="section-title"><i class="fas fa-robot"></i> Automatic Data Type Detection</div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Column</th><th>Pandas Type</th><th>Detected Type</th></tr></thead>
+                    <tbody id="datatypeTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- NUMERICAL -->
+        <div id="section-numerical" class="section">
+            <div class="section-title"><i class="fas fa-calculator"></i> Numerical Statistics</div>
+            <div class="table-container">
+                <table id="numerical-table">
+                    <thead>
+                        <tr>
+                            <th>Variable</th><th>Mean</th><th>Median</th><th>Min</th><th>Max</th>
+                            <th>Std Dev</th><th>Variance</th><th>Mode</th><th>Skewness</th>
+                            <th>Kurtosis</th><th>Missing</th><th>Missing %</th><th>Normality</th><th>Outliers</th>
+                        </tr>
+                    </thead>
+                    <tbody id="numerical-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CATEGORICAL -->
+        <div id="section-categorical" class="section">
+            <div class="section-title"><i class="fas fa-tags"></i> Categorical Statistics</div>
+            <div class="table-container">
+                <table id="categorical-table">
+                    <thead>
+                        <tr>
+                            <th>Variable</th><th>Unique Categories</th><th>Mode</th>
+                            <th>Mode Frequency</th><th>Mode %</th><th>Missing Count</th><th>Missing %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categorical-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VISUALIZATION -->
+<div id="section-visualization" class="section">
+    <div class="section-title">
+        <i class="fas fa-chart-pie"></i> <span id="viz-section-title">Visualizations</span>
+    </div>
+
+    <!-- TAB: UNIVARIATE -->
+    <div id="viz-tab-univariate" class="viz-tab-content" style="display:none;">
+        <div class="viz-sub-tab-nav">
+            <button class="viz-sub-btn active" onclick="switchUniSub('numerical', this)">
+                <i class="fas fa-hashtag"></i> Numerical
+            </button>
+            <button class="viz-sub-btn" onclick="switchUniSub('categorical', this)">
+                <i class="fas fa-font"></i> Categorical
+            </button>
+        </div>
+        <div id="uni-sub-numerical" class="uni-sub-content">
+            <div class="viz-controls" style="margin-bottom:20px;">
+                <label style="color:#8b8fa8;font-size:0.85rem;">Select Numerical Column</label>
+                <select id="uni-num-col" class="select-input">
+                    <option value="">-- Select Column --</option>
+                </select>
+                <button class="btn" onclick="generateUnivariate('numerical')">
+                    <i class="fas fa-chart-bar"></i> Generate Charts
+                </button>
+            </div>
+            <div id="uni-num-charts"></div>
+        </div>
+        <div id="uni-sub-categorical" class="uni-sub-content" style="display:none;">
+            <div class="viz-controls" style="margin-bottom:20px;">
+                <label style="color:#8b8fa8;font-size:0.85rem;">Select Categorical Column</label>
+                <select id="uni-cat-col" class="select-input">
+                    <option value="">-- Select Column --</option>
+                </select>
+                <button class="btn" onclick="generateUnivariate('categorical')">
+                    <i class="fas fa-chart-pie"></i> Generate Charts
+                </button>
+            </div>
+            <div id="uni-cat-charts"></div>
+        </div>
+    </div>
+
+    <!-- TAB: BIVARIATE -->
+    <div id="viz-tab-bivariate" class="viz-tab-content" style="display:none;">
+        <div class="viz-controls" style="margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="color:#8b8fa8;font-size:0.85rem;">Column 1 (X — Numerical)</label>
+                <select id="bi-col1" class="select-input"><option value="">-- Select --</option></select>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="color:#8b8fa8;font-size:0.85rem;">Column 2 (Y — Numerical)</label>
+                <select id="bi-col2" class="select-input"><option value="">-- Select --</option></select>
+            </div>
+            <button class="btn" style="align-self:flex-end;" onclick="generateBivariate()">
+                <i class="fas fa-braille"></i> Generate Charts
+            </button>
+        </div>
+        <div id="bi-charts"></div>
+    </div>
+
+    <!-- TAB: MULTIVARIATE -->
+    <div id="viz-tab-multivariate" class="viz-tab-content" style="display:none;">
+        <div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:20px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                <label style="color:#8b8fa8;font-size:0.85rem;">
+                    Select Columns <span style="color:#6c63ff;">(min. 2)</span>
+                </label>
+                <div id="multi-checkbox-list"
+                     style="background:#1a1d2e;border:1px solid #2d3148;border-radius:10px;
+                            padding:12px 16px;display:flex;flex-direction:column;gap:8px;
+                            min-width:200px;max-height:220px;overflow-y:auto;">
+                    <p style="color:#8b8fa8;font-size:0.8rem;">Upload dataset first</p>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                <label style="color:#8b8fa8;font-size:0.85rem;">
+                    Color/Hue Column <span style="color:#8b8fa8;font-size:0.75rem;">(for Multi-color Scatter)</span>
+                </label>
+                <select id="multi-hue" class="select-input">
+                    <option value="">-- None --</option>
+                </select>
+                <label style="color:#8b8fa8;font-size:0.85rem;margin-top:8px;">
+                    Bubble Size Column <span style="color:#8b8fa8;font-size:0.75rem;">(for Bubble Chart)</span>
+                </label>
+                <select id="multi-bubble" class="select-input">
+                    <option value="">-- None --</option>
+                </select>
+            </div>
+            <button class="btn" style="align-self:flex-end;" onclick="generateMultivariate()">
+                <i class="fas fa-project-diagram"></i> Generate Charts
+            </button>
+        </div>
+        <div id="multi-charts"></div>
+    </div>
+
+    <!-- TAB: CAT VS NUM -->
+    <div id="viz-tab-catvsnum" class="viz-tab-content" style="display:none;">
+        <div class="viz-controls" style="margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="color:#8b8fa8;font-size:0.85rem;">Numerical Column</label>
+                <select id="cvn-num-col" class="select-input"><option value="">-- Select --</option></select>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="color:#8b8fa8;font-size:0.85rem;">Categorical Column</label>
+                <select id="cvn-cat-col" class="select-input"><option value="">-- Select --</option></select>
+            </div>
+            <button class="btn" style="align-self:flex-end;" onclick="generateCatVsNum()">
+                <i class="fas fa-exchange-alt"></i> Generate Charts
+            </button>
+        </div>
+        <div id="cvn-charts"></div>
+    </div>
+    <!-- TAB: CAT VS CAT -->
+<div id="viz-tab-catvscat" class="viz-tab-content" style="display:none;">
+    <div class="viz-controls" style="margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="color:#8b8fa8;font-size:0.85rem;">Categorical Column 1</label>
+            <select id="cvc-col1" class="select-input">
+                <option value="">-- Select --</option>
+            </select>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="color:#8b8fa8;font-size:0.85rem;">Categorical Column 2</label>
+            <select id="cvc-col2" class="select-input">
+                <option value="">-- Select --</option>
+            </select>
+        </div>
+
+        <button class="btn" style="align-self:flex-end;" onclick="generateCatVsCat()">
+            <i class="fas fa-exchange-alt"></i> Generate Charts
+        </button>
+    </div>
+
+    <div id="cvc-charts"></div>
+</div>
+
+<!-- TAB: NUM VS NUM -->
+<div id="viz-tab-numvsnum" class="viz-tab-content" style="display:none;">
+    <div class="viz-controls" style="margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="color:#8b8fa8;font-size:0.85rem;">Numerical Column 1</label>
+            <select id="nvn-col1" class="select-input">
+                <option value="">-- Select --</option>
+            </select>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="color:#8b8fa8;font-size:0.85rem;">Numerical Column 2</label>
+            <select id="nvn-col2" class="select-input">
+                <option value="">-- Select --</option>
+            </select>
+        </div>
+
+        <button class="btn" style="align-self:flex-end;" onclick="generateNumVsNum()">
+            <i class="fas fa-exchange-alt"></i> Generate Charts
+        </button>
+    </div>
+
+    <div id="nvn-charts"></div>
+</div>
+</div>
+
+        <!-- INSIGHTS -->
+        <div id="section-insights" class="section">
+            <div class="section-title"><i class="fas fa-lightbulb"></i> Automatic Insights</div>
+            <div id="insights-container"></div>
+        </div>
+
+        <!-- TIME SERIES -->
+        <div id="section-timeseries" class="section">
+            <div class="section-title"><i class="fas fa-chart-line"></i> Time Series Analysis</div>
+            <div class="info-box" style="margin-bottom:20px;">
+                Analisis tren data berdasarkan kolom tanggal dan nilai numerik.
+            </div>
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+    <!-- Dropdown untuk Tanggal -->
+    <select id="date-column" class="select-input" style="width:220px; height:42px; margin:0;">
+        <option value="">-- Select Date Column --</option>
+    </select>
+    
+    <!-- Dropdown Baru untuk Variabel Numerik (WAJIB ADA INI) -->
+    <select id="ts-col-select" class="select-input" style="width:220px; height:42px; margin:0;">
+        <option value="">-- Select Variable --</option>
+    </select>
+    
+    <!-- Tombol Generate -->
+    <button class="btn" onclick="generateTimeSeries()" style="height:42px; margin:0;">
+        <i class="fas fa-chart-line"></i> Generate
+    </button>
+</div>
+            <div id="timeseries-chart"></div>
+            <div id="timeseries-insight"></div>
+        </div>
+
+        <!-- TEAM MEMBER -->
+<div id="section-team" class="section">
+    <div class="section-title"><i class="fas fa-users"></i> Team Member — Kelompok 3</div>
+
+    <div class="team-cards-grid">
+
+        <div class="team-card tc-c1">
+            <div class="team-glow"></div>
+            <div class="team-photo-ring">
+                <div class="team-photo-inner">
+                    <img src="{{ url_for('static', filename='images/rose.jpeg') }}" onerror="this.parentElement.innerHTML='HR'">
+                </div>
+            </div>
+            <p class="team-role">Member</p>
+            <p class="team-name">Hirose Kawarin Sirait</p>
+            <p class="team-nim">NIM: 52250012</p>
+            <div class="team-links">
+                <a href="https://github.com/hirose-kawarin-sirait" target="_blank" class="team-link">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+
+        <div class="team-card tc-c2">
+            <div class="team-glow"></div>
+            <div class="team-photo-ring">
+                <div class="team-photo-inner">
+                    <img src="{{ url_for('static', filename='images/cecil.jpeg') }}" onerror="this.parentElement.innerHTML='CM'">
+                </div>
+            </div>
+            <p class="team-role">Member</p>
+            <p class="team-name">Cecilia Mutiara Handayani</p>
+            <p class="team-nim">NIM: 52250013</p>
+            <div class="team-links">
+                <a href="https://github.com/sisilmutiara8-wq" target="_blank" class="team-link">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+
+        <div class="team-card tc-c3">
+            <div class="team-glow"></div>
+            <div class="team-photo-ring">
+                <div class="team-photo-inner">
+                    <img src="{{ url_for('static', filename='images/Dhefio.JPEG') }}" onerror="this.parentElement.innerHTML='DA'">
+                </div>
+            </div>
+            <p class="team-role">Member</p>
+            <p class="team-name">Dhefio Alim Muzaki</p>
+            <p class="team-nim">NIM: 52250014</p>
+            <div class="team-links">
+                <a href="https://github.com/dfjy2118" target="_blank" class="team-link">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+
+        <div class="team-card tc-c4">
+            <div class="team-glow"></div>
+            <div class="team-photo-ring">
+                <div class="team-photo-inner">
+                    <img src="{{ url_for('static', filename='images/yustian.jpeg') }}" onerror="this.parentElement.innerHTML='YP'">
+                </div>
+            </div>
+            <p class="team-role">Member</p>
+            <p class="team-name">M. Yustian Putra Muhadi</p>
+            <p class="team-nim">NIM: 52250015</p>
+            <div class="team-links">
+                <a href="https://github.com/myustianputramuhadi" target="_blank" class="team-link">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+
+        <div class="team-card tc-c5">
+            <div class="team-glow"></div>
+            <div class="team-photo-ring">
+                <div class="team-photo-inner">
+                    <img src="{{ url_for('static', filename='images/nisah.jpeg') }}" onerror="this.parentElement.innerHTML='KN'">
+                </div>
+            </div>
+            <p class="team-role">Member</p>
+            <p class="team-name">Khafizatun Nisa</p>
+            <p class="team-nim">NIM: 52250018</p>
+            <div class="team-links">
+                <a href="https://github.com/KhafizatunNisa" target="_blank" class="team-link">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    </div><!-- END MAIN CONTENT -->
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    
+</body>
+</html>

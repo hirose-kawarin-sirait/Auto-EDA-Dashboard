@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — Auto EDA Insight</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: #0b0d1a;
+            color: #fff;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* ─── LEFT PANEL ─────────────────────────────────── */
+        .left-panel {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 52px;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 60% 40%, #2a1a6e 0%, #0b0d1a 65%);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            animation: floatOrb 8s ease-in-out infinite alternate;
+        }
+        .orb-1 { width:420px; height:420px; background:#6c63ff; top:-80px; right:-60px; animation-delay:0s; }
+        .orb-2 { width:280px; height:280px; background:#a855f7; bottom:60px; left:20px; animation-delay:2s; }
+        .orb-3 { width:200px; height:200px; background:#3b82f6; top:40%; left:40%; animation-delay:4s; }
+
+        @keyframes floatOrb {
+            0%   { transform: translate(0,0) scale(1); }
+            100% { transform: translate(20px, 30px) scale(1.08); }
+        }
+
+        .left-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .left-logo .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .left-logo span {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .left-content h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        .left-content h1 .accent {
+            background: linear-gradient(90deg, #6c63ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .left-content .subtitle {
+            color: #8b8fa8;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            max-width: 380px;
+            margin-bottom: 36px;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding-bottom: 22px;
+            position: relative;
+        }
+
+        .step-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 38px;
+            width: 2px;
+            height: calc(100% - 16px);
+            background: linear-gradient(to bottom, rgba(108,99,255,0.5), rgba(108,99,255,0));
+        }
+
+        .step-num {
+            width: 38px; height: 38px;
+            background: rgba(108,99,255,0.15);
+            border: 1px solid rgba(108,99,255,0.35);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #6c63ff;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-text strong {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+            margin-top: 8px;
+        }
+
+        .step-text span {
+            color: #8b8fa8;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .left-footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px;
+            padding: 16px 18px;
+            text-align: center;
+        }
+
+        .stat-card .num {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #6c63ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .lbl {
+            color: #8b8fa8;
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+
+        /* ─── RIGHT PANEL ─────────────────────────────────── */
+        .right-panel {
+            width: 480px;
+            background: #13152a;
+            border-left: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .form-box {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .form-tabs {
+            display: flex;
+            margin-bottom: 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .form-tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 0;
+            color: #8b8fa8;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.25s;
+        }
+
+        .form-tab.active { color: #fff; border-bottom-color: #6c63ff; }
+        .form-tab:hover:not(.active) { color: #c4c6d8; }
+
+        .form-heading h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .form-heading p {
+            color: #8b8fa8;
+            font-size: 0.87rem;
+            margin-bottom: 28px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #c4c6d8;
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-wrap .icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #5a5e7a;
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 14px 13px 38px;
+            background: #1a1d2e;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrap input::placeholder { color: #5a5e7a; }
+
+        .input-wrap input:focus {
+            outline: none;
+            border-color: #6c63ff;
+            background: #1e2138;
+        }
+
+        .input-wrap .toggle-pw {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #5a5e7a;
+            cursor: pointer;
+            font-size: 0.85rem;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .strength-bar {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+            margin-bottom: 14px;
+        }
+
+        .strength-bar .seg {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            transition: background 0.3s;
+        }
+
+        .strength-label {
+            font-size: 0.72rem;
+            color: #5a5e7a;
+            margin-top: 2px;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .terms-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin-bottom: 22px;
+        }
+
+        .terms-row input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: #6c63ff;
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .terms-row label {
+            font-size: 0.82rem;
+            color: #8b8fa8;
+            line-height: 1.5;
+        }
+
+        .terms-row a { color: #6c63ff; text-decoration: none; }
+        .terms-row a:hover { text-decoration: underline; }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            margin-bottom: 22px;
+        }
+
+        .btn-register:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .bottom-link {
+            text-align: center;
+            color: #8b8fa8;
+            font-size: 0.84rem;
+        }
+
+        .bottom-link a {
+            color: #6c63ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .bottom-link a:hover { text-decoration: underline; }
+
+        .error-box {
+            background: rgba(255,100,100,0.1);
+            border: 1px solid rgba(255,100,100,0.3);
+            color: #ff8080;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            margin-bottom: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .left-panel { display: none; }
+            .right-panel { width: 100%; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ─── LEFT PANEL ──────────────────────────────────────── -->
+<div class="left-panel">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="left-logo">
+        <div class="logo-icon"><i class="fas fa-chart-bar"></i></div>
+        <span>Auto EDA Insight</span>
+    </div>
+
+    <div class="left-content">
+        <h1>Mulai eksplorasi<br>data Anda <span class="accent">sekarang.</span></h1>
+        <p class="subtitle">
+            Buat akun gratis dan langsung akses semua fitur analisis
+            data otomatis — tidak perlu kartu kredit.
+        </p>
+        <div class="steps-list">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-text">
+                    <strong>Buat Akun</strong>
+                    <span>Daftar dengan username dan password.<br>Proses cepat, kurang dari 1 menit.</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-text">
+                    <strong>Upload Dataset</strong>
+                    <span>Dukung format CSV dan Excel. Drag &amp; drop<br>langsung ke dashboard.</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-text">
+                    <strong>Dapatkan Insight</strong>
+                    <span>EDA otomatis, 16+ visualisasi, dan laporan<br>insight langsung tersedia.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="left-footer">
+        <div class="stat-row">
+            <div class="stat-card">
+                <div class="num">16+</div>
+                <div class="lbl">Tipe Visualisasi</div>
+            </div>
+            <div class="stat-card">
+                <div class="num">100%</div>
+                <div class="lbl">Otomatis</div>
+            </div>
+            <div class="stat-card">
+                <div class="num">0</div>
+                <div class="lbl">Baris Kode</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── RIGHT PANEL ─────────────────────────────────────── -->
+<div class="right-panel">
+    <div class="form-box">
+
+        <div class="form-tabs">
+            <a href="/login" class="form-tab">Login</a>
+            <a href="/register" class="form-tab active">Register</a>
+        </div>
+
+        <div class="form-heading">
+            <h2>Buat akun baru <span class="title-icon">✧</span></h2>
+            <p>Gratis · Tidak perlu kartu kredit</p>
+        </div>
+
+        {% if error %}
+        <div class="error-box"><i class="fas fa-circle-exclamation"></i> {{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+
+            <label class="field-label" for="email">Email</label>
+            <div class="input-wrap">
+                <i class="fas fa-envelope icon"></i>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="nama@email.com"
+                    required>
+            </div>
+
+            <label class="field-label" for="username">Username</label>
+            <div class="input-wrap">
+                <i class="fas fa-user icon"></i>
+                <input type="text" id="username" name="username" placeholder="username_kamu" required autocomplete="username">
+            </div>
+
+            <label class="field-label" for="password">Password</label>
+            <div class="input-wrap">
+                <i class="fas fa-lock icon"></i>
+                <input type="password" id="password" name="password" placeholder="Min. 8 karakter" required autocomplete="new-password" oninput="checkStrength(this.value)">
+                <button type="button" class="toggle-pw" onclick="togglePw()" tabindex="-1">
+                    <i class="fas fa-eye" id="pw-eye"></i>
+                </button>
+            </div>
+            <div class="strength-bar">
+                <div class="seg" id="s1"></div>
+                <div class="seg" id="s2"></div>
+                <div class="seg" id="s3"></div>
+                <div class="seg" id="s4"></div>
+            </div>
+            <span class="strength-label" id="strength-label">Masukkan password</span>
+
+            <div class="terms-row">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">
+                    Saya menyetujui <a href="#">Syarat &amp; Ketentuan</a>
+                    dan <a href="#">Kebijakan Privasi</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-register">
+                <i class="fas fa-user-plus"></i> Buat Akun
+            </button>
+
+        </form>
+
+        <div class="bottom-link">
+            Sudah punya akun? <a href="/login">Login di sini</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function togglePw() {
+    const input = document.getElementById('password');
+    const eye   = document.getElementById('pw-eye');
+    input.type = input.type === 'password' ? 'text' : 'password';
+    eye.className = input.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+}
+
+function checkStrength(val) {
+    const segs  = [document.getElementById('s1'), document.getElementById('s2'),
+                   document.getElementById('s3'), document.getElementById('s4')];
+    const label = document.getElementById('strength-label');
+    let score = 0;
+    if (val.length >= 8)               score++;
+    if (/[A-Z]/.test(val))             score++;
+    if (/[0-9]/.test(val))             score++;
+    if (/[^A-Za-z0-9]/.test(val))      score++;
+
+    const colors = ['', '#ef4444', '#f97316', '#eab308', '#22c55e'];
+    const labels = ['Masukkan password', 'Terlalu lemah', 'Lemah', 'Cukup kuat', 'Kuat 💪'];
+
+    segs.forEach((s, i) => {
+        s.style.background = i < score ? colors[score] : 'rgba(255,255,255,0.1)';
+    });
+    label.textContent = val.length ? labels[score] : labels[0];
+    label.style.color = score > 0 ? colors[score] : '#5a5e7a';
+}
+</script>
+
+</body>
+</html>

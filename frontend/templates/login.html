@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Auto EDA Insight</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: #0b0d1a;
+            color: #fff;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* ─── LEFT PANEL ─────────────────────────────────── */
+        .left-panel {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 52px;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 60% 40%, #2a1a6e 0%, #0b0d1a 65%);
+        }
+
+        /* animated orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            animation: floatOrb 8s ease-in-out infinite alternate;
+        }
+        .orb-1 { width:420px; height:420px; background:#6c63ff; top:-80px; right:-60px; animation-delay:0s; }
+        .orb-2 { width:280px; height:280px; background:#a855f7; bottom:60px; left:20px; animation-delay:2s; }
+        .orb-3 { width:200px; height:200px; background:#3b82f6; top:40%; left:40%; animation-delay:4s; }
+
+        @keyframes floatOrb {
+            0%   { transform: translate(0,0) scale(1); }
+            100% { transform: translate(20px, 30px) scale(1.08); }
+        }
+
+        .left-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .left-logo .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .left-logo span {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .left-content h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        .left-content h1 .accent {
+            background: linear-gradient(90deg, #6c63ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .left-content .subtitle {
+            color: #8b8fa8;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            max-width: 380px;
+            margin-bottom: 36px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .feature-icon {
+            width: 42px; height: 42px;
+            background: rgba(108,99,255,0.15);
+            border: 1px solid rgba(108,99,255,0.3);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            color: #6c63ff;
+            flex-shrink: 0;
+        }
+
+        .feature-text strong {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .feature-text span {
+            color: #8b8fa8;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .left-footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        .testimonial-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px 22px;
+            backdrop-filter: blur(10px);
+        }
+
+        .testimonial-card .quote-icon {
+            font-size: 1.4rem;
+            color: #6c63ff;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .testimonial-card p {
+            color: #c4c6d8;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .testimonial-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar-stack {
+            display: flex;
+        }
+
+        .avatar-stack .av {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: 2px solid #1a1d2e;
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            margin-left: -6px;
+        }
+
+        .avatar-stack .av:first-child { margin-left: 0; }
+
+        .testimonial-meta span {
+            font-size: 0.78rem;
+            color: #8b8fa8;
+        }
+
+        /* ─── RIGHT PANEL ─────────────────────────────────── */
+        .right-panel {
+            width: 480px;
+            background: #13152a;
+            border-left: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .form-box {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .form-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .form-tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 0;
+            color: #8b8fa8;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.25s;
+        }
+
+        .form-tab.active {
+            color: #fff;
+            border-bottom-color: #6c63ff;
+        }
+
+        .form-tab:hover:not(.active) { color: #c4c6d8; }
+
+        .form-heading h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .form-heading p {
+            color: #8b8fa8;
+            font-size: 0.87rem;
+            margin-bottom: 28px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #c4c6d8;
+            margin-bottom: 7px;
+        }
+
+        .field-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+        }
+
+        .field-row .field-label { margin-bottom: 0; }
+
+        .forgot-link {
+            font-size: 0.8rem;
+            color: #6c63ff;
+            text-decoration: none;
+        }
+
+        .forgot-link:hover { text-decoration: underline; }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .input-wrap .icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #5a5e7a;
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 14px 13px 38px;
+            background: #1a1d2e;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrap input::placeholder { color: #5a5e7a; }
+
+        .input-wrap input:focus {
+            outline: none;
+            border-color: #6c63ff;
+            background: #1e2138;
+        }
+
+        .input-wrap .toggle-pw {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #5a5e7a;
+            cursor: pointer;
+            font-size: 0.85rem;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .remember-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 22px;
+        }
+
+        .remember-row input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: #6c63ff;
+            cursor: pointer;
+        }
+
+        .remember-row label {
+            font-size: 0.84rem;
+            color: #8b8fa8;
+            cursor: pointer;
+        }
+
+        .btn-signin {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            margin-bottom: 20px;
+        }
+
+        .btn-signin:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            color: #5a5e7a;
+            font-size: 0.78rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+        }
+
+        .social-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px;
+            background: #1a1d2e;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: #c4c6d8;
+            font-size: 0.88rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-social:hover {
+            background: #1e2138;
+            border-color: rgba(108,99,255,0.3);
+        }
+
+        .google-g {
+            width: 18px; height: 18px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23EA4335' d='M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z'/%3E%3Cpath fill='%234285F4' d='M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z'/%3E%3Cpath fill='%23FBBC05' d='M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z'/%3E%3Cpath fill='%2334A853' d='M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z'/%3E%3C/svg%3E") center/contain no-repeat;
+            flex-shrink: 0;
+        }
+
+        .ms-icon {
+            width: 18px; height: 18px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 21 21'%3E%3Crect x='1' y='1' width='9' height='9' fill='%23F25022'/%3E%3Crect x='11' y='1' width='9' height='9' fill='%2300A4EF'/%3E%3Crect x='1' y='11' width='9' height='9' fill='%2300B04F'/%3E%3Crect x='11' y='11' width='9' height='9' fill='%23FFB900'/%3E%3C/svg%3E") center/contain no-repeat;
+            flex-shrink: 0;
+        }
+
+        .bottom-link {
+            text-align: center;
+            color: #8b8fa8;
+            font-size: 0.84rem;
+        }
+
+        .bottom-link a {
+            color: #6c63ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .bottom-link a:hover { text-decoration: underline; }
+
+        .error-box {
+            background: rgba(255,100,100,0.1);
+            border: 1px solid rgba(255,100,100,0.3);
+            color: #ff8080;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            margin-bottom: 18px;
+        }
+
+        /* responsive */
+        @media (max-width: 900px) {
+            .left-panel { display: none; }
+            .right-panel { width: 100%; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ─── LEFT PANEL ──────────────────────────────────────── -->
+<div class="left-panel">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="left-logo">
+        <div class="logo-icon"><i class="fas fa-chart-bar"></i></div>
+        <span>Auto EDA Insight</span>
+    </div>
+
+    <div class="left-content">
+        <h1>Analisis data,<br>lebih <span class="accent">cerdas &amp; cepat.</span></h1>
+        <p class="subtitle">
+            Upload dataset, eksplorasi otomatis, dan dapatkan insight mendalam
+            tanpa perlu coding satu baris pun.
+        </p>
+        <div class="feature-list">
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                <div class="feature-text">
+                    <strong>EDA Otomatis</strong>
+                    <span>Statistik deskriptif, distribusi, dan korelasi<br>dianalisis dalam hitungan detik.</span>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                <div class="feature-text">
+                    <strong>16+ Tipe Visualisasi</strong>
+                    <span>Histogram, boxplot, heatmap, scatter, dan banyak lagi —
+                    semua interaktif.</span>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+                <div class="feature-text">
+                    <strong>Auto Insight</strong>
+                    <span>Rekomendasi cerdas tentang distribusi, outlier,
+                    dan pola tersembunyi di data Anda.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<!-- ─── RIGHT PANEL ─────────────────────────────────────── -->
+<div class="right-panel">
+    <div class="form-box">
+
+        <div class="form-tabs">
+            <a href="/login" class="form-tab active">Login</a>
+            <a href="/register" class="form-tab">Register</a>
+        </div>
+
+        <div class="form-heading">
+            <h2>Welcome back <span class="title-icon">✦</span></h2>
+            <p>Masuk untuk melanjutkan ke dashboard Anda</p>
+        </div>
+
+        {% if error %}
+        <div class="error-box"><i class="fas fa-circle-exclamation"></i> {{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+
+            <label class="field-label" for="username">Username</label>
+            <div class="input-wrap">
+                <i class="fas fa-user icon"></i>
+                <input type="text" id="username" name="username" placeholder="your_username" required autocomplete="username">
+            </div>
+
+            <div class="field-row">
+                <label class="field-label" for="password">Password</label>
+                <a href="/forgot-password" class="forgot-link">Lupa password?</a>
+            </div>
+            <div class="input-wrap">
+                <i class="fas fa-lock icon"></i>
+                <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                <button type="button" class="toggle-pw" onclick="togglePw()" tabindex="-1">
+                    <i class="fas fa-eye" id="pw-eye"></i>
+                </button>
+            </div>
+
+            <div class="remember-row">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn-signin">
+                <i class="fas fa-sign-in-alt"></i> Sign in
+            </button>
+
+        </form>
+
+
+        <div class="bottom-link">
+            Belum punya akun? <a href="/register">Register</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function togglePw() {
+    const input = document.getElementById('password');
+    const eye   = document.getElementById('pw-eye');
+    if (input.type === 'password') {
+        input.type = 'text';
+        eye.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        eye.className = 'fas fa-eye';
+    }
+}
+</script>
+
+</body>
+</html>
