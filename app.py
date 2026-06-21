@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_file
 from backend.visualization import (
     generate_single_chart,
